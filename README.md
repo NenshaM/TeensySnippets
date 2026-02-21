@@ -19,14 +19,14 @@ The [Teensy 3.1](https://www.pjrc.com/teensy/teensy31.html) is a compact, high-p
 - [Teensy 3.1](https://www.pjrc.com/teensy/teensy31.html)
 
 ### Software
-- [Arduino IDE 2.x.x](https://www.arduino.cc/en/software/)
+- [Arduino IDE 2.3.x](https://www.arduino.cc/en/software/)
 - [Teensyduino](https://www.pjrc.com/teensy/teensyduino.html)
 
 ## Repository Contents
 
 This repository contains example code snippets demonstrating different USB-based functionalities using the Teensy 3.1.
 
-### 1. Mouse Jiggler
+### 1. [Mouse Jiggler](MouseJiggler/MouseJiggler.ino)
 
 Simulates small, random mouse movements to prevent a computer from entering sleep mode or activating a screen lock.
 
@@ -34,21 +34,17 @@ Simulates small, random mouse movements to prevent a computer from entering slee
 - Emulates a USB mouse device
 - Randomized pointer movement
 
-### 2. WiP: Reverse Shell Opener
+### 2. [Reverse Shell Injector](ReverseShell/ReverseShell.ino)
 
 Uses USB keyboard emulation to open a reverse shell on a target machine.
 
-<!-- **Supported Environments:**
-- Bash
-- Netcat
-- Python3
-- PowerShell
-
 **Functionality:**
-
-* Emulates a USB keyboard
-* Automatically types and executes payload commands
-* Supports both Windows and Linux targets -->
+- Emulates a USB keyboard
+- Automatically types and executes a reverse shell payload
+- Uses only buit in binaries
+- Tested on
+  - Debian 13 (trixie) with GNOME
+  - WiP: Windows 11, currently blocked by defender
 
 ## Disclaimer
 
