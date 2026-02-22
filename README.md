@@ -44,7 +44,9 @@ Uses USB keyboard emulation to open a reverse shell on a target machine.
 - Uses only buit in binaries
 - Tested on
   - Debian 13 (trixie) with GNOME
-  - WiP: Windows 11, currently blocked by defender
+  - WiP: Windows 11
+    - To Do: Close PowerShell window
+    - To Do: Encode payload
 
 ## Disclaimer
 
