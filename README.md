@@ -26,7 +26,7 @@ The [Teensy 3.1](https://www.pjrc.com/teensy/teensy31.html) is a compact, high-p
 
 This repository contains example code snippets demonstrating different USB-based functionalities using the Teensy 3.1.
 
-### 1. [Mouse Jiggler](MouseJiggler/MouseJiggler.ino)
+### 1. [Mouse Jiggler](MouseJiggler)
 
 Simulates small, random mouse movements to prevent a computer from entering sleep mode or activating a screen lock.
 
@@ -34,14 +34,14 @@ Simulates small, random mouse movements to prevent a computer from entering slee
 - Emulates a USB mouse device
 - Randomized pointer movement
 
-### 2. [Reverse Shell Injector](ReverseShell/ReverseShell.ino)
+### 2. [Reverse Shell Injector](ReverseShell)
 
 Uses USB keyboard emulation to open a reverse shell on a target machine.
 
 **Functionality:**
 - Emulates a USB keyboard
 - Automatically types and executes a reverse shell payload
-- Uses only buit in binaries
+- Uses only buit-in binaries
 - Tested on
   - Debian 13 (trixie) with GNOME
   - Windows 11
